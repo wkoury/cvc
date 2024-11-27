@@ -3,15 +3,11 @@ package term
 
 import (
 	"cvc/internal/commit"
-	"cvc/internal/git"
 
 	"github.com/rivo/tview"
 )
 
-func UI() {
-	var commitType commit.ConventionalCommitType
-	breakingChange := false
-	msg := ""
+func UI(commitType *commit.ConventionalCommitType, breakingChange *bool, msg *string) {
 
 	commitMsgInputWidth := 80
 	commitMsgInputHeight := 3
@@ -20,15 +16,12 @@ func UI() {
 	app := tview.NewApplication()
 	form := tview.NewForm().
 		AddDropDown("Commit type", commit.AllConventionalCommitTypes, 0, func(option string, optionIndex int) {
-			commitType = commit.ConventionalCommitType(option)
+			*commitType = commit.ConventionalCommitType(option)
 		}).
-		AddCheckbox("Breaking change?", false, func(checked bool) { breakingChange = checked }).
-		AddTextArea("Commit message", "", commitMsgInputWidth, commitMsgInputHeight, commitMsgMaxLength, func(text string) { msg = text }).
+		AddCheckbox("Breaking change?", false, func(checked bool) { *breakingChange = checked }).
+		AddTextArea("Commit message", "", commitMsgInputWidth, commitMsgInputHeight, commitMsgMaxLength, func(text string) { *msg = text }).
 		AddButton("Commit", func() {
 			app.Stop()
-			if err := git.Commit(commit.CommitMsg(commitType, breakingChange, msg)); err != nil {
-				panic(err)
-			}
 		})
 
 	form.SetBorder(true).SetTitle("Conventional commit").SetTitleAlign(tview.AlignCenter)
