@@ -24,6 +24,9 @@ test:
 lint:
 	staticcheck ./...
 
+vet:
+	go vet ./...
+
 fmt:
 	go fmt ./...
 
